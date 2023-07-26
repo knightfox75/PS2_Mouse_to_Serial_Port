@@ -1,0 +1,19 @@
+/*******************************************************************************
+  
+    Adaptador de mouse PS2 a puerto serie RS-232
+
+    Proyecto iniciado el Martes, 25 de Julio del 2023
+    por Cesar Rincon "NightFox"
+
+    https://nightfoxandco.com
+    contact@nightfoxandco.com
+
+    "Adaptador de mouse PS2 a puerto serie RS-232" is under MIT License
+    Copyright (c) 2023 by Cesar Rincon "NightFox"
+
+*******************************************************************************/
+
+
+2023-07-26 V0.9.0-beta
+--------------------------------------------------------------------------------
+- Primera versión del proyecto publicada.
