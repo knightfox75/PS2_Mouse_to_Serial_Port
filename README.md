@@ -15,7 +15,7 @@ Una vez documentado sobre estos proyectos y realizando un primer prototipo funci
 
 2. Como funciona
 ----------------------------------------
-Básicamente la placa Arduino se encarga de prácticamente todo el trabajo, necesitando solo un poco de electrónica externa para su funcionamiento. Una librería de interacción con el protocolo PS/2 no permite leer la señal codificada procedente del ratón con las entradas. Dicha información se codifica en un paquete de datos en el formato que esperan los drivers de ratón mas comunes y se envían al puerto serie. Además, se monitorea la señal RTS del puerto serie por si se solicita el reinicio del envío de datos.
+Básicamente la placa Arduino se encarga de prácticamente todo el trabajo, necesitando solo un poco de electrónica externa para su funcionamiento. Una librería de interacción con el protocolo PS/2 nos permite leer la señal codificada procedente del ratón con las entradas. Dicha información se codifica en un paquete de datos en el formato que esperan los drivers de ratón mas comunes y se envían al puerto serie. Además, se monitorea la señal RTS del puerto serie por si se solicita el reinicio del envío de datos.
 
 
 3. Hardware usado en el prototipo
