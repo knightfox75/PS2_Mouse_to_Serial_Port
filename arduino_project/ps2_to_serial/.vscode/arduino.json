@@ -1,6 +1,7 @@
 {
     "sketch": "ps2_to_serial.ino",
-    "board": "arduino:avr:uno",
-    "port": "COM4",
-    "output": "./build"
+    "board": "arduino:avr:nano",
+    "port": "COM8",
+    "output": "./build",
+    "configuration": "cpu=atmega328old"
 }
