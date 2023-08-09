@@ -5,7 +5,9 @@ Un convertidor para conectar un ratón PS/2 a un puerto serie (RS-232).
 1. Introducción
 ----------------------------------------
 Los ratones con conexión DB9 para puerto serie cada vez son más difíciles de encontrar (y más caros), lo que puede suponer un problema si necesitamos emplear uno en un ordenador clásico que solo disponga del puerto serie para su conexión. Después de investigar unas horas, encontré varias opciones comerciales y un par de proyectos open source que, usando placas Arduino, permitían la conexión de un ratón PS/2, o USB compatible con el protocolo PS/2 a un puerto serie.
+
 https://github.com/Lameguy64/ps2serial
+
 https://github.com/kristopher/PS2-Mouse-Arduino
 
 Una vez documentado sobre estos proyectos y realizando un primer prototipo funcional de los mismos, decidí realizar mi propia versión del conversor.
@@ -13,7 +15,7 @@ Una vez documentado sobre estos proyectos y realizando un primer prototipo funci
 
 2. Como funciona
 ----------------------------------------
-Básicamente la placa Arduino se encarga de prácticamente todo el trabajo, necesitando solo un poco de electrónica externa para su funcionamiento. Una librería de interacción con el protocolo PS/2 no permite leer la señal codificada procedente del ratón con las entradas. Dicha información se codifica en un paquete de datos en el formato que esperan los drivers de ratón mas comunes y se envían al puerto serie. Además, se monitorea la señal RTS del puerto serie por si se solicita el reinicio del envío de datos.
+Básicamente la placa Arduino se encarga de prácticamente todo el trabajo, necesitando solo un poco de electrónica externa para su funcionamiento. Una librería de interacción con el protocolo PS/2 nos permite leer la señal codificada procedente del ratón con las entradas. Dicha información se codifica en un paquete de datos en el formato que esperan los drivers de ratón mas comunes y se envían al puerto serie. Además, se monitorea la señal RTS del puerto serie por si se solicita el reinicio del envío de datos.
 
 
 3. Hardware usado en el prototipo
