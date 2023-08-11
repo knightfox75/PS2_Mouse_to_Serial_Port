@@ -16,6 +16,13 @@
 
 *******************************************************************************/
 
+2023-08-11 V1.0.1-rev2.1
+--------------------------------------------------------------------------------
+- Corregido un error en la colocación del conector PS/2 en la placa
+  "Stand Alone" del proyecto KiCad.
+- Recordar que aún no he podido producir físicamente estas placas, por lo que
+  si vais a producirlas, revisar el proyecto 3 veces en búsqueda de errores.
+
 2023-08-10 V1.0.1-rev2
 --------------------------------------------------------------------------------
 - Se añade el esquema realizado en formato KiCad.
