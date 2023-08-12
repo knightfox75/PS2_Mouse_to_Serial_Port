@@ -1,0 +1,34 @@
+%TF.GenerationSoftware,KiCad,Pcbnew,7.0.6*%
+%TF.CreationDate,2023-08-12T10:13:32+02:00*%
+%TF.ProjectId,ps2_mouse_to_serial_port_adapter_stand_alone,7073325f-6d6f-4757-9365-5f746f5f7365,rev?*%
+%TF.SameCoordinates,Original*%
+%TF.FileFunction,Legend,Bot*%
+%TF.FilePolarity,Positive*%
+%FSLAX46Y46*%
+G04 Gerber Fmt 4.6, Leading zero omitted, Abs format (unit mm)*
+G04 Created by KiCad (PCBNEW 7.0.6) date 2023-08-12 10:13:32*
+%MOMM*%
+%LPD*%
+G01*
+G04 APERTURE LIST*
+%ADD10C,4.000500*%
+G04 APERTURE END LIST*
+D10*
+%TO.C,*%
+X27940000Y-27940000D03*
+%TD*%
+%TO.C,*%
+X114300000Y-93980000D03*
+%TD*%
+%TO.C,*%
+X27940000Y-93980000D03*
+%TD*%
+%TO.C,*%
+X114300000Y-27940000D03*
+%TD*%
+%TO.C,J3*%
+X111330740Y-35610800D03*
+X112141000Y-42369740D03*
+X111330740Y-49128680D03*
+%TD*%
+M02*

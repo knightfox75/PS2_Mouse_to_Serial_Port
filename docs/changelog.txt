@@ -16,6 +16,19 @@
 
 *******************************************************************************/
 
+
+2023-08-12 V1.3.0
+--------------------------------------------------------------------------------
+- Se utiliza una referencia de versión para el proyecto, independientemente
+  de las versiones de placa o software para facilitar la identificación de
+  la versión actual.
+- Se añade el esquema y diseño de placa para la versión "ISA".
+- Se amplía el ancho de pista en las placas restantes.
+- Sin cambios en el software.
+- Importante! Recordad que aún no he podido verificar en "físico" el diseño
+  de las placas, por lo que recomiendo precaución si van a ser usadas.
+
+
 2023-08-11 V1.0.1-rev2.1
 --------------------------------------------------------------------------------
 - Corregido un error en la colocación del conector PS/2 en la placa
