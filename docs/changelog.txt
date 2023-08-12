@@ -16,6 +16,14 @@
 
 *******************************************************************************/
 
+2023-08-12 V1.4.0
+--------------------------------------------------------------------------------
+- Pequeños ajustes al tamaño y contorno de la placa ISA.
+- Se han añadido zonas de relleno para GND en la placa ISA.
+- Sin cambios en el software.
+- Importante! Recordad que aún no he podido verificar en "físico" el diseño
+  de las placas, por lo que recomiendo precaución si van a ser usadas.
+
 
 2023-08-12 V1.3.0
 --------------------------------------------------------------------------------
