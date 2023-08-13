@@ -16,6 +16,15 @@
 
 *******************************************************************************/
 
+2023-08-13 V1.5.0
+--------------------------------------------------------------------------------
+- Ajustadas las placas "Stand alone" y "In-a-box" al tamaño standard de
+  90x70 mm.
+- Añadidas a estas placas las zonas de relleno a masa (GND).
+- Añadidas las serigrafias con los valores de todos los componentes en todas
+  las versiones de las placas.
+
+
 2023-08-12 V1.4.0
 --------------------------------------------------------------------------------
 - Pequeños ajustes al tamaño y contorno de la placa ISA.

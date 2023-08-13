@@ -6,8 +6,8 @@
 
   (title_block
     (title "PS/2 Mouse to Serial Port Adapter")
-    (date "2023-08-12")
-    (rev "3")
+    (date "2023-08-13")
+    (rev "4")
     (company "Cesar Rincon")
     (comment 1 "NightFox & Co.")
     (comment 2 "nightfoxandco.com")
@@ -2169,10 +2169,6 @@
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 8e25d7f7-f8b6-4c37-8c2e-fb168ae47b9c)
   )
-  (text "GND" (at 151.13 187.96 0)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid 91eee688-09e3-4ece-9da7-b55c8beaabb9)
-  )
   (text "GND" (at 16.51 157.48 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 957cc2d3-355b-4e22-96fc-7d52346c3c14)
@@ -2232,6 +2228,15 @@
   (text "GND" (at 74.93 45.72 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid f2608b20-cae3-4ce2-9225-cbb4590815fa)
+  )
+
+  (label "+5V" (at 262.89 25.4 0) (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid b7f5ae90-0484-4d79-822f-61d81aab7861)
+  )
+  (label "GND" (at 152.4 184.15 0) (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid fe69b1ea-e223-4210-84ab-0602d475e5cc)
   )
 
   (symbol (lib_id "Device:C") (at 243.84 45.72 0) (unit 1)
