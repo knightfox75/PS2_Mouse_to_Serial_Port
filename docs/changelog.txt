@@ -16,6 +16,15 @@
 
 *******************************************************************************/
 
+
+2023-08-14 V1.5.1
+--------------------------------------------------------------------------------
+- Arreglada la serigrafía del conector MINI-DIN-6 (PS/2), la cual se
+  superponía en algunas zonas de soldado.
+- En todas las placas se añade el símbolo de los agujeros de montaje con el
+  tamaño estándar M3.
+
+
 2023-08-13 V1.5.0
 --------------------------------------------------------------------------------
 - Ajustadas las placas "Stand alone" y "In-a-box" al tamaño standard de
