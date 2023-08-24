@@ -170,7 +170,18 @@ void MainCode::SetPs2() {
 
     digitalWrite(PIN_MSG_LED, HIGH);
 
-    ps2mouse.initialize();  
+    bool ps2_ready = false;
+    do {
+        // Intenta iniciar el mouse ps/2, si no se consigue, reintentalo en 1 segundo
+        ps2_ready |= ps2mouse.initialize();
+        if (!ps2_ready) {
+            delay(500);
+            digitalWrite(PIN_MSG_LED, LOW);
+            delay(500);
+            digitalWrite(PIN_MSG_LED, HIGH);
+        }
+    } while (!ps2_ready);
+
     ps2mouse.set_sample_rate(PS2_SAMPLE_RATE);
     ps2mouse.set_scaling_1_1();
 

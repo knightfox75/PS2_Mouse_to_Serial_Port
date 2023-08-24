@@ -1,3 +1,37 @@
+/*******************************************************************************
+  
+    PS2-Mouse-Arduino
+
+    https://github.com/kristopher/PS2-Mouse-Arduino
+  
+    "PS2-Mouse-Arduino" is under MIT License
+    Copyright (c) 2017 by Kris Chambers
+
+    Modifications by Cesar Rincon "NightFox" are under MIT License
+    Copyright (c) 2023 by Cesar Rincon
+
+    Permission is hereby granted, free of charge, to any person
+    obtaining a copy of this software and associated documentation
+    files (the "Software"), to deal	in the Software without restriction,
+    including without limitation the rights to use, copy, modify, merge,
+    publish, distribute, sublicense, and/or sell copies of the Software,
+    and to permit persons to whom the Software is furnished to do so,
+    subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be
+    included in all	copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+    EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+    IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+    CLAIM, DAMAGES OR OTHER	LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+    TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+    SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ 
+*******************************************************************************/
+
+
 
 #if defined(ARDUINO) && ARDUINO >= 100
 #include "Arduino.h"
@@ -25,23 +59,36 @@ int PS2Mouse::data_pin() {
   return _data_pin;
 }
 
-void PS2Mouse::initialize() {
+/*** Function modified by NightFox ***/
+bool PS2Mouse::initialize() {
+
   pull_high(_clock_pin);
   pull_high(_data_pin);
   delay(20);
-  write(0xff); // Send Reset to the mouse
-  read_byte();  // Read ack byte
-  delay(20); // Not sure why this needs the delay
-  read_byte();  // blank
-  read_byte();  // blank
-  delay(20); // Not sure why this needs the delay
+
+  /*** Modified by NightFox ***/
+  if (!SafeWrite(0xff)) {     // Send Reset to the mouse
+    pull_low(_clock_pin);
+    pull_low(_data_pin);
+    return false;
+  }
+  /***   ----------   ***/
+
+  read_byte();      // Read ack byte
+  delay(20);        // Not sure why this needs the delay
+  read_byte();      // blank
+  read_byte();      // blank
+  delay(20);        // Not sure why this needs the delay
   if (_mode == REMOTE) {
     set_remote_mode();
   } else {
-    enable_data_reporting(); // Tell the mouse to start sending data again
+    enable_data_reporting();      // Tell the mouse to start sending data again
   }
   delayMicroseconds(100);
   _initialized = 1;
+  
+  return true;    // Modified by NightFox
+
 }
 
 void PS2Mouse::set_mode(int data) {
@@ -161,6 +208,65 @@ void PS2Mouse::write(int data) {
   while ((!digitalRead(_clock_pin)) || (!digitalRead(_data_pin))) {;} // wait for mouse to switch modes
   pull_low(_clock_pin); // put a hold on the incoming data.
 }
+
+
+/*** Function added by NightFox ***/
+bool PS2Mouse::SafeWrite(int data) {
+
+  uint8_t i = 0;
+  uint8_t parity = 1;
+  uint32_t time_out = 0;
+
+  pull_high(_data_pin);
+  pull_high(_clock_pin);
+  delayMicroseconds(300);
+
+  pull_low(_clock_pin);
+  delayMicroseconds(300);
+
+  pull_low(_data_pin);
+  delayMicroseconds(10);
+
+  pull_high(_clock_pin); // Start Bit
+
+  time_out = millis() + TIME_OUT;
+
+  while (digitalRead(_clock_pin)) {
+      if (millis() > time_out) return false;
+  } // wait for mouse to take control of clock)
+
+  // clock is low, and we are clear to send data
+  for (i=0; i < 8; i++) {
+    if (data & 0x01) {
+      pull_high(_data_pin);
+    } else {
+      pull_low(_data_pin);
+    }
+    // wait for clock cycle
+    while (!digitalRead(_clock_pin)) {;}
+    while (digitalRead(_clock_pin)) {;}
+    parity = parity ^ (data & 0x01);
+    data = data >> 1;
+  }
+  // parity
+  if (parity) {
+    pull_high(_data_pin);
+  } else {
+    pull_low(_data_pin);
+  }
+  while (!digitalRead(_clock_pin)) {;}
+  while (digitalRead(_clock_pin)) {;}
+  pull_high(_data_pin);
+  delayMicroseconds(50);
+  while (digitalRead(_clock_pin)) {;}
+  while ((!digitalRead(_clock_pin)) || (!digitalRead(_data_pin))) {;} // wait for mouse to switch modes
+  pull_low(_clock_pin); // put a hold on the incoming data.
+
+  return true;
+
+}
+
+
 
 int16_t * PS2Mouse::report(int16_t data[]) {
   write(0xeb); // Send Read Data

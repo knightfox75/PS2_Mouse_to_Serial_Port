@@ -17,6 +17,17 @@
 *******************************************************************************/
 
 
+
+2023-08-24 V1.6.0
+--------------------------------------------------------------------------------
+- Modificada la librería PS2Mouse para evitar que la placa Arduino se quede
+  colgada al iniciarse si no se detecta el mouse conectado en el puerto PS/2.
+  Ahora si la inicialización del mouse falla, se reescanea el puerto a cada
+  segundo. De todos modos, os recomiendo que no conectéis o desconectéis el
+  mouse con el adaptador/ordenador encendido, ya que hay la posibilidad de que
+  se causen daños al adaptador o al propio mouse.
+
+
 2023-08-14 V1.5.1
 --------------------------------------------------------------------------------
 - Arreglada la serigrafía del conector MINI-DIN-6 (PS/2), la cual se

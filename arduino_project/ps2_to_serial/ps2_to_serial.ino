@@ -1,7 +1,7 @@
 /*******************************************************************************
   
     Adaptador de mouse PS2 a puerto serie RS-232
-    Version 1.0.0-STABLE
+    Version 1.1.0-STABLE
 
     Archivo principal de Arduino
 
