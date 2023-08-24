@@ -62,7 +62,8 @@ En mi caso he usado un LED rojo para el indicador de alimentación y un LED
 amarillo para el indicador de estado. Dicho indicador nos proporciona cierta
 información en el momento del arranque del adaptador, así como de su
 funcionamiento. Al encender el adaptador, si no puede detectar un ratón
-compatible conectado, el LED de estado quedará iluminado permanentemente.
+compatible conectado, el LED de estado parpadeará de manera intermitente
+una vez por segundo, indicando que está intentando iniciar el ratón.
 Si el proceso de inicio se realiza correctamente, este LED emitirá 3
 parpadeos, uno largo seguido de 2 mas cortos. Una vez iniciado el adaptador,
 si movemos el ratón, observaremos que este LED parpadea regularmente,
