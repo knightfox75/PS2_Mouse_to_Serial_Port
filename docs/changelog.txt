@@ -16,7 +16,16 @@
 
 *******************************************************************************/
 
-
+2023-08-28 V1.7.0
+--------------------------------------------------------------------------------
+- Modificadas las huellas de todas las placas para que los componentes TO92
+  resulten más fáciles de soldar a mano.
+- Modificadas las conexiones del conector IDC en la placa ISA para poder usar
+  un cable IDC a DB9 comercial, sin necesidad de realizarle modificaciones.
+- Añadido el modelo en formato FreeCad y el archivo STL del soporte para la
+  placa ISA. Estos archivos estan preparados para poder realizar la impresión
+  en 3D del soporte. Se recomienda un in-fill del 100%.
+  
 
 2023-08-24 V1.6.0
 --------------------------------------------------------------------------------
