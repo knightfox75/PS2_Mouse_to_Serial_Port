@@ -16,6 +16,35 @@
 
 *******************************************************************************/
 
+2023-09-06 V1.8.0
+--------------------------------------------------------------------------------
+- Dado que algunos modelos de ratón no funcionaban como es debido y en algunos
+  casos ni encendían (PERIMICE-209), se analiza la librería usada de Arduino
+  para la interfaz con el puerto PS/2. Viendo que no seguía el protocolo
+  estándar PS/2, se escribe una librería con el mínimo necesario para
+  interactuar con un ratón PS/2, siguiendo las normas de dicho protocolo.
+- Ahora todos los comandos que se envían al ratón se verifican.
+- Se añade una secuencia de encendido para activar algunos modelos de ratón
+  que antes no funcionaban, como el PERIMICE-209.
+- Con la librería personalizada, se añade la opción de detectar si el ratón es
+  compatible con Microsoft IntelliMouse y este dispone de características
+  extendidas, como la rueda de scroll. De ser así, se activa la función a
+  tiempo real de cambio de velocidad del cursor usando la rueda de scroll.
+- Se añade la función de guardado de la velocidad actual del cursor
+  (manteniendo pulsados los botones derecho e izquierdo durante 5 segundos) y
+  la función de restauración de la velocidad por defecto (manteniendo pulsados
+  los botones derecho e izquierdo durante 5 segundos).
+- Siguiendo el protocolo estándar PS/2, a partir de ahora no es posible la
+  conexión en caliente del ratón al puerto PS/2.
+- Se añaden nuevas indicaciones de estado en el LED correspondiente.
+
+
+2023-08-29 V1.7.1
+--------------------------------------------------------------------------------
+- Modificado el ancho de la pista de alimentación del puerto PS/2
+  de la placa ISA.
+
+
 2023-08-28 V1.7.0
 --------------------------------------------------------------------------------
 - Modificadas las huellas de todas las placas para que los componentes TO92

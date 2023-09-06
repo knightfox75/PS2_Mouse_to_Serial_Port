@@ -45,10 +45,10 @@
 /*** Includes ***/
 // Arduino
 #include <Arduino.h>
-// Librerias
-#include "lib/PS2Mouse/PS2Mouse.h"
+#include <EEPROM.h>
 // Proyecto
 #include "config.h"
+#include "ps2_mouse_interface.h"
 #include "maincode.h"
 
 
@@ -74,10 +74,14 @@ void MainCode::Start() {
     SetDefaults();
     // Establece los pins
     SetPins();
+    // Indica al raton PS/2 que debe encenderse
+    ps2mouse.PowerUp();
     // Inicia el protocolo PS/2
     SetPs2();
     // Inicia el protocolo SERIE
     SetSerial();
+    // Carga la configuracion por defecto del raton (velocidad)
+    LoadMouseSpeed();
 
     // 3 parpadeos para indicar el bootup correcto
     for (uint8_t i = 0; i < 3; i ++) {
@@ -102,8 +106,8 @@ void MainCode::Update() {
 
     // Lectura de los datos del puerto PS/2
     // Dado que el puerto PS/2 es mucho mas rapido que el puerto SERIE,
-    // estos datos se leeran 4 veces para compensar la diferencia de velocidades
-    for (uint8_t i = 0; i < 4; i ++) ReadMouse();
+    // estos datos se leeran "READ_LOOPS" veces para compensar la diferencia de velocidades
+    for (uint8_t i = 0; i < READ_LOOPS; i ++) ReadMouse();
 
     // Analisis y preparacion de los datos recogidos
     ParseData();
@@ -116,10 +120,14 @@ void MainCode::Update() {
     // Monitoreo de la señal RTS
     RtsStatusMonitor();
 
+    // Guardado de datos?
+    SaveMouseSpeed();
+
     // Registra el estado de los botones para la siguiente iteracion
     mouse.last.left = mouse.button.left;
     mouse.last.right = mouse.button.right;
     mouse.last.middle = mouse.button.middle;
+    mouse.last.wheel = mouse.delta.wheel;
 
 }
 
@@ -131,18 +139,26 @@ void MainCode::SetDefaults() {
     // Mouse
     mouse.position.x = 0;
     mouse.position.y = 0;
+    mouse.position.wheel = 0;
     mouse.delta.x = 0;
     mouse.delta.y = 0;
+    mouse.delta.wheel = 0;
     mouse.button.left = false;
     mouse.button.right = false;
     mouse.button.middle = false;
     mouse.last.left = false;
     mouse.last.right = false;
     mouse.last.middle = false;
+    mouse.last.wheel = 0;
     for (uint8_t i = 0; i < 4; i ++) mouse.packet[i] = 0;
     mouse.packet_size = 3;
     mouse.event = false;
     mouse.led = 0;
+    mouse.speed = MOUSE_DEFAULT_SPEED;
+    mouse.save_timer = (millis() + SAVE_HELD_TIME);
+    mouse.save_flag = false;
+    mouse.restore_timer = (millis() + RESTORE_HELD_TIME);
+    mouse.restore_flag = false;
 
     // RS-232
     rs232.rts = false;
@@ -169,11 +185,11 @@ void MainCode::SetPins() {
 void MainCode::SetPs2() {
 
     digitalWrite(PIN_MSG_LED, HIGH);
-
+    
     bool ps2_ready = false;
     do {
         // Intenta iniciar el mouse ps/2, si no se consigue, reintentalo en 1 segundo
-        ps2_ready |= ps2mouse.initialize();
+        ps2_ready |= ps2mouse.Init();
         if (!ps2_ready) {
             delay(500);
             digitalWrite(PIN_MSG_LED, LOW);
@@ -181,9 +197,6 @@ void MainCode::SetPs2() {
             digitalWrite(PIN_MSG_LED, HIGH);
         }
     } while (!ps2_ready);
-
-    ps2mouse.set_sample_rate(PS2_SAMPLE_RATE);
-    ps2mouse.set_scaling_1_1();
 
     digitalWrite(PIN_MSG_LED, LOW);
 
@@ -209,11 +222,14 @@ void MainCode::SetSerial() {
 void MainCode::ReadMouse() {
 
     // Lectura de los datos actuales
-    ps2mouse.report(mouse.data);
+    ps2mouse.GetReport(mouse.data);
 
     // Actualiza el desplazamiento del cursor
     mouse.position.x += mouse.data[1];
     mouse.position.y -= mouse.data[2];
+
+    // Actualiza la rueda (si esta presente)
+    mouse.position.wheel += mouse.data[3];
 
     // Boton Izquierdo
     if (mouse.data[0] & 0x01) {
@@ -232,10 +248,7 @@ void MainCode::ReadMouse() {
         mouse.button.middle |= true;
         mouse.event |= true;
         // Compensacion de retardo por la lectura de paquetes extra al pulsar el boton central
-        if (mouse.button.middle && !mouse.last.middle) {
-            ps2mouse.report(mouse.data);
-            ps2mouse.report(mouse.data);
-        }
+        if (mouse.button.middle && !mouse.last.middle) ps2mouse.EmptyBuffer();
     }
 
 }
@@ -245,22 +258,45 @@ void MainCode::ReadMouse() {
 /*** Matodo para el analisis y preparacion de los datos para su envio ***/
 void MainCode::ParseData() {
 
-    // Divide entre dos los valores de desplazamiento para suavizarlo
-    mouse.delta.x = (mouse.position.x / 2);
-    mouse.delta.y = (mouse.position.y / 2);
+    // Rueda del raton
+    mouse.delta.wheel = mouse.position.wheel;
+
+    // Ajusta la velocidad del cursor con la rueda (si esta disponible)
+    if (mouse.delta.wheel != mouse.last.wheel) {
+        if (mouse.delta.wheel > 0) {
+            mouse.speed += MOUSE_SPEED_CHANGE;
+            if (mouse.speed > MOUSE_MAX_SPEED) mouse.speed = MOUSE_MAX_SPEED;
+        }
+        if (mouse.delta.wheel < 0) {
+            mouse.speed -= MOUSE_SPEED_CHANGE;
+            if (mouse.speed < MOUSE_MIN_SPEED) mouse.speed = MOUSE_MIN_SPEED;
+        }
+    }
+
+    // Ajuste de velocidad
+    mouse.delta.x = (mouse.position.x * mouse.speed);
+    mouse.delta.y = (mouse.position.y * mouse.speed);
 
     // Si se detecta desplazamiento, ajusta los valores delta, reinicia los contadores y registra el evento
     if (mouse.delta.x != 0) {
         mouse.position.x = 0;
         mouse.event |= true;
-        if (mouse.delta.x < -127) mouse.delta.x = -127;
-        if (mouse.delta.x > 127) mouse.delta.x = 127;
+        if (mouse.delta.x < -255) mouse.delta.x = -255;
+        if (mouse.delta.x > 255) mouse.delta.x = 255;
     }
     if (mouse.delta.y != 0) {
         mouse.position.y = 0;
         mouse.event |= true;
-        if (mouse.delta.y < -127) mouse.delta.y = -127;
-        if (mouse.delta.y > 127) mouse.delta.y = 127;
+        if (mouse.delta.y < -255) mouse.delta.y = -255;
+        if (mouse.delta.y > 255) mouse.delta.y = 255;
+    }
+
+    // Captura el movimiento de la rueda
+    if (mouse.delta.wheel != 0) {
+        mouse.position.wheel = 0;
+        mouse.event |= true;
+        if (mouse.delta.wheel < -7) mouse.delta.wheel = -7;
+        if (mouse.delta.wheel > 7) mouse.delta.wheel = 7;
     }
 
     // Captura los eventos por el cambio de estado al pulsar/soltar cualquier boton del mouse
@@ -277,7 +313,13 @@ void MainCode::ActivityLed() {
 
     // Led de actividad
     if (mouse.event) {
-        if (mouse.button.left || mouse.button.right || mouse.button.middle) {
+        if (mouse.restore_flag) {
+            digitalWrite(PIN_MSG_LED, HIGH);
+            mouse.led = MOUSE_BLINK_DELAY;   
+        } else if (mouse.save_flag) {
+            digitalWrite(PIN_MSG_LED, LOW);
+            mouse.led = MOUSE_BLINK_DELAY;
+        } else if (mouse.button.left || mouse.button.right || mouse.button.middle || (mouse.delta.wheel != 0)) {
             digitalWrite(PIN_MSG_LED, HIGH);
             mouse.led = MOUSE_BLINK_DELAY;
         } else {
@@ -377,6 +419,11 @@ void MainCode::RtsStatusMonitor() {
             mouse.button.right = false;
             mouse.button.middle = false;
 
+            // Reinicia el registro de posicion
+            mouse.position.x = 0;
+            mouse.position.y = 0;
+            mouse.position.wheel = 0;
+
             // Registra el cambio de flag del RTS
             rs232.rts = true;
 
@@ -392,5 +439,76 @@ void MainCode::RtsStatusMonitor() {
         rs232.rts = false;      // Flag de señal recibida abajo
 
     }
+
+}
+
+
+/*** Guarda la configuracion de velocidad ***/
+void MainCode::SaveMouseSpeed() {
+
+    // Si no estan presionados ambos botones, reinicia los temporizadores y sal
+    if (!mouse.button.left || !mouse.button.right) {
+        mouse.save_timer = (millis() + SAVE_HELD_TIME);
+        mouse.restore_timer = (millis() + RESTORE_HELD_TIME);
+        // Reinicia flags de guardado si se sueltan ambos botones
+        if (!mouse.button.left && !mouse.button.right) {
+            mouse.save_flag = false;
+            mouse.restore_flag = false;
+        }
+        // Sal
+        return;
+    }
+
+    // Datos
+    bool save_now = false;
+    uint8_t data = 0;
+
+    // Guardado de los parametros actuales
+    if (!mouse.save_flag) {
+        if ((millis() >= mouse.save_timer)) { 
+            data = (uint8_t)(mouse.speed * 100.0f);
+            mouse.save_flag = true;
+            save_now = true;
+        }
+    }
+
+    // Reinicio y guardado de los parametros
+    if (!mouse.restore_flag) {
+        if ((millis() >= mouse.restore_timer)) { 
+            mouse.speed = MOUSE_DEFAULT_SPEED;
+            data = (uint8_t)(mouse.speed * 100.0f);
+            mouse.restore_flag = true;
+        }
+    }
+
+    // Guarda los parametros en la EEPROM si se solicita
+    if (save_now) {
+        EEPROM.write(0x00, CHK0);
+        EEPROM.write(0x01, data);
+        EEPROM.write(0x02, CHK2);
+    }
+
+}
+
+
+
+/*** Lee la configuracion de velocidad ***/
+void MainCode::LoadMouseSpeed() {
+
+    uint8_t b0 = EEPROM.read(0x00);
+    uint8_t data = EEPROM.read(0x01);
+    uint8_t b2 = EEPROM.read(0x02);
+
+    if ((b0 != CHK0) || (b2 != CHK2)) {
+        // Si los datos son invalidos, crealos por defecto
+        data = (uint8_t)(MOUSE_DEFAULT_SPEED * 100.0f);
+        EEPROM.write(0x00, CHK0);
+        EEPROM.write(0x01, data);
+        EEPROM.write(0x02, CHK2);
+    }
+
+    mouse.speed = ((float)data / 100.0f);
+    if (mouse.speed < MOUSE_MIN_SPEED) mouse.speed = MOUSE_MIN_SPEED;
+    if (mouse.speed > MOUSE_MAX_SPEED) mouse.speed = MOUSE_MAX_SPEED;
 
 }

@@ -62,19 +62,43 @@ En mi caso he usado un LED rojo para el indicador de alimentación y un LED
 amarillo para el indicador de estado. Dicho indicador nos proporciona cierta
 información en el momento del arranque del adaptador, así como de su
 funcionamiento. Al encender el adaptador, si no puede detectar un ratón
-compatible conectado, el LED de estado parpadeará de manera intermitente
-una vez por segundo, indicando que está intentando iniciar el ratón.
+compatible conectado, quedará encendido de manera permanente. Dicho LED de
+estado parpadeará de manera intermitente una vez por segundo si ha detectado un
+ratón, pero no es posible iniciar la comunicación siguiendo el protocolo PS/2.
 Si el proceso de inicio se realiza correctamente, este LED emitirá 3
-parpadeos, uno largo seguido de 2 mas cortos. Si el LED permanece encendido,
-indica que el ratón conectado no es compatible. Una vez iniciado el adaptador,
+parpadeos, uno largo seguido de 2 mas cortos. Una vez iniciado el adaptador,
 si movemos el ratón, observaremos que este LED parpadea regularmente,
 quedando encendido mientras mantengamos pulsado alguno de los 3 botones del
-ratón. Si se recibe desde el puerto serie la señal RTS, este LED emitirá un
+ratón. Si movemos la rueda de scroll, tambien emitira un parpadeo.
+Si se recibe desde el puerto serie la señal RTS, este LED emitirá un
 parpadeo de aproximadamente medio segundo. Esto nos permite verificar que el
 driver ha detectado correctamente nuestro adaptador.
 
 
-5. Precauciones
+5. Capacidades extendidas
+--------------------------------------------------------------------------------
+Dado que este proyecto (en especial la placa ISA) está destinado a ordenadores
+sin puerto PS/2 (normalmente 486 y anteriores), usando el sistema operativo
+MS-DOS o Windows 3.11 y anteriores, junto con el hecho de que actualmente casi
+todos los ratones PS/2 son ópticos y disponen de la rueda de scroll, sumándole
+que para estos ordenadores casi ningún programa hace uso de la rueda de scroll,
+he decidido usar dicha rueda para ajustar a tiempo real la velocidad de
+desplazamiento del cursor. Dado que, según la resolución de pantalla, programa o
+modelo de ratón esta puede ser diferente, creo que es una característica útil.
+La velocidad seleccionada se conservará hasta que apaguemos el adaptador (o el
+ordenador en el caso de la placa ISA), no viendose afectada por el reinicio
+del sistema. Si queremos guardar la velocidad actual de manera permanente,
+deberemos de mantener pulsados los botones izquierdo y derecho de manera
+simultanea durante 5 segundos, observando que el LED de estado se apaga
+transcurrido ese tiempo. Esto nos indica que la configuración de ha almacenado
+de manera correcta.
+Si en algún momento deseamos restaurar la configuración por defecto, deberemos
+de mantener presionados ambos botones durante 10 segundos, el LED de estado se
+apagará a los 5 segundos, volviéndose a encender transcurridos 10 segundos.
+Esto indicará que la configuración se ha restaurado y almacenado con éxito.
+
+
+6. Precauciones
 --------------------------------------------------------------------------------
 - Conectar y desconectar siempre el ratón al puerto PS/2 con el adaptador
 desconectado. La conexión o desconexión del ratón con el adaptador conectado

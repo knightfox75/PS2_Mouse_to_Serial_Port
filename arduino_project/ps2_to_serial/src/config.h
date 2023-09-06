@@ -58,13 +58,15 @@ const uint8_t PIN_MOUSE_DATA = 5;           // Datos del protocolo PS/2 (Pin 1 d
 const uint8_t PIN_RTS_SIGNAL = 7;           // Señal RTS del puerto serie (Pin 7 del conector DB9) *1
 
 const uint8_t PIN_MSG_LED = 8;              // LED indicador de estado
-//const uint8_t PIN_MSG_LED = 13;
 
 // *1 - No conectar NUNCA este pin del puerto serie directamente a un pin de la placa Arduino
 
 
+
 /*** Define los datos de configuracion del protocolo PS/2 ***/
-const uint32_t PS2_SAMPLE_RATE = 200;
+const uint8_t READ_LOOPS = 4;               // Numero de lecturas del puerto PS/2 por ciclo [4]
+const uint8_t SAMPLE_RATE = 100;            // Samples/seg [10, 20, 40, 60, 80, >> 100 <<, 200]
+const uint8_t RESOLUTION = 0x02;            // Resolucion [0x00 = 1 count/mm, 0x01 = 2 count/mm, >> 0x02 = 4 count/mm <<, 0x03 = 8 count/mm]
 
 
 /*** Define los datos de configuracion del protocolo SERIE ***/
@@ -73,7 +75,14 @@ const uint8_t SERIAL_OPTIONS = SERIAL_7N1;
 
 
 /*** Configuracion adicional del mouse ***/
-const int8_t MOUSE_BLINK_DELAY = 3;
+const int8_t MOUSE_BLINK_DELAY = 3;         // Espera entre parpadeos [3]
+const float MOUSE_DEFAULT_SPEED = 0.5f;     // Factor de escala en la velocidad [0.5f]
+const float MOUSE_SPEED_CHANGE = 0.05f;     // Factor de cambio [0.05f]
+const float MOUSE_MIN_SPEED = 0.1f;         // Velocidad minima [0.1f]
+const float MOUSE_MAX_SPEED = 1.0f;         // Valocidad maxima [1.0f]
+const float SAVE_HELD_TIME = 5000;          // Tiempo que se requiere para el guardado de datos en la eeprom [5s]
+const float RESTORE_HELD_TIME = 10000;       // Tiempo que se requiere para la restauracion y guardado de datos en la eeprom [10s]
+const uint8_t CHK0 = 0x01, CHK2 = 0x04;     // Checksum de datos de la eeprom 
 
 
 #endif

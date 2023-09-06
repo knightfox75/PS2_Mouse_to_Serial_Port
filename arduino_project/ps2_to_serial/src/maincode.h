@@ -49,10 +49,9 @@
 /*** Includes ***/
 // Arduino
 #include <Arduino.h>
-// Librerias
-#include "lib/PS2Mouse/PS2Mouse.h"
 // Proyecto
 #include "config.h"
+#include "ps2_mouse_interface.h"
 
 
 
@@ -76,7 +75,7 @@ class MainCode {
     private:
 
         // Objeto de la clase PS2Mouse (Acceso al raton PS/2)
-        PS2Mouse ps2mouse = PS2Mouse(PIN_MOUSE_CLOCK, PIN_MOUSE_DATA, STREAM);
+        Ps2MouseInterface ps2mouse = Ps2MouseInterface(PIN_MOUSE_CLOCK, PIN_MOUSE_DATA, SAMPLE_RATE, RESOLUTION);
 
         // Variables de control de los datos del raton PS/2
         struct {
@@ -89,20 +88,28 @@ class MainCode {
                 bool left;
                 bool right;
                 bool middle;
+                int32_t wheel;
             } last;
             struct {
                 int32_t x;
                 int32_t y;
+                int32_t wheel;
             } position;
             struct {
                 int32_t x;
                 int32_t y;
+                int32_t wheel;
             } delta;
             uint8_t packet[4];
             uint8_t packet_size;
-            int16_t data[3];            // [0] - Status bits, [1] - Movement X, [2] - Movement Y
+            int16_t data[4];            // [0] - Status bits, [1] - Movement X, [2] - Movement Y, [4] - Movement Z
             bool event;                 // Evento de raton
             int8_t led;                 // Control del led de actividad
+            float speed;                // Velocidad del cursor
+            int32_t save_timer;         // Temporizador para el guardado
+            bool save_flag;             // Flag de guardado
+            int32_t restore_timer;      // Temporizador para la restauracion
+            bool restore_flag;          // Flag para la restauracion
         } mouse;
 
         // Variables de control del puerto RS-232
@@ -131,6 +138,11 @@ class MainCode {
         void SendData();
         // Monitor de la señal RTS del puerto serie
         void RtsStatusMonitor();
+
+        // Guarda la configuracion de velocidad
+        void SaveMouseSpeed();
+        // Lee la configuracion de velocidad
+        void LoadMouseSpeed();
 
 };
 
