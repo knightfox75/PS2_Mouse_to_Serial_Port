@@ -7,6 +7,7 @@ Un convertidor para conectar un ratón PS/2 a un puerto serie (RS-232).
 Los ratones con conexión DB9 para puerto serie cada vez son más difíciles de encontrar (y más caros), lo que puede suponer un problema si necesitamos emplear uno en un ordenador clásico que solo disponga del puerto serie para su conexión. Después de investigar unas horas, encontré varias opciones comerciales y un par de proyectos open source que, usando placas Arduino, permitían la conexión de un ratón PS/2, o USB compatible con el protocolo PS/2 a un puerto serie.
 
 https://github.com/Lameguy64/ps2serial
+
 https://github.com/kristopher/PS2-Mouse-Arduino
 
 Una vez documentado sobre estos proyectos y realizando un primer prototipo funcional de los mismos, decidí realizar mi propia versión del conversor.
